@@ -1,54 +1,42 @@
-import { Box } from '@mui/material';
 import { Container } from '@mui/system';
 import './App.css';
 import SearchAppBar from './Component/SearchAppBar/SearchAppBar';
-// import { uid } from 'uid';
-import { DataSnapshot, onValue, ref, set } from 'firebase/database';
 import { db } from './Component/Firebase';
 import { useEffect, useState } from 'react';
+import { collection, getDocs } from 'firebase/firestore';
 
 
 function App() {
 
   const [todo, setTodo] = useState([]);
-  const [todos, setTodos] = useState([]);
+  const dataCollectionRef = collection(db, "clint-assignment-data");
   const [terGetData, setTergetData] = useState(null);
-  //console.log(todos[0]?.Sheet1);  
-  //  console.log(todos[0].Sheet1); a.Date
-  console.log(todo);
-  // var d = new Date('2023-01-04T18:15:00.000Z');
-  // console.log(d.getUTCHours()); // Hours
-  // console.log(d.getUTCMinutes());
-  // console.log(d.getUTCSeconds());
-  
+ 
 
-  //console.log(todo);
-  todo?.map(a => {
-    // const d = new Date(a.Date);
-    // console.log( new Date(a.Date).getUTCHours()); // Hours
-    // console.log(d.getUTCMinutes());
-    // console.log(d.getUTCSeconds());
-  }
-  )
+  useEffect(() => {
+    // const getData = async ()=>{
+    //   const data = await getDocs(dataCollectionRef)
+
+    // }
+    // getData ()
+    const getData = async () => {
+      const data = await getDocs(dataCollectionRef);
+      console.log(data); 
+      setTodo(data.docs.map((doc) => ({ ...doc.data(), id: doc.id })));
+     // data.docs.map((doc) =>  console.log(doc) );
+    }
+
+
+    getData()
+
+  }, [dataCollectionRef]);
+
   const handleTargerData = (data) => {
-    console.log(data);
+    
     setTergetData(data);
   }
 
-  useEffect(() => {
-    onValue(ref(db), snapshot => {
-      const data = snapshot.val();
-      if (data !== null) {
-        Object.values(data).map(t => {
-          // console.log(t.Sheet1)
-          const onlyValue = Object.values(t.Sheet1);
-          // console.log(onlyValue)
-          // setTodos(oldArray => [...oldArray,onlyValue]);
-          setTodo(onlyValue);
-        })
-      }
-    })
-  }, [])
+
 
   return (
     <div className="App">
@@ -58,30 +46,7 @@ function App() {
           <div className='left-side-div'>
 
 
-            {/* <div>
 
-              <h1>{terGetData?.ID} <br /> Persone Detected</h1>
-
-              <div style={{
-                display: 'grid',
-                gridTemplateColumns: '1fr 1fr',
-                gridRow: '35px',
-                fontWeight: 700
-
-              }}>
-
-                <span>Name </span> <span>: Sheikh Ali</span>
-                <span>Location</span> <span>: Mirpur-13,Dhaka-1216</span>
-                <span>Date</span><span>: 12 jan 2023</span>
-                <span>Time</span> <span>: 45:50</span>
-              </div>
-
-
-
-              <h4>Description: <br />
-                she is an good girl i dont like him so mutch
-              </h4>
-            </div> */}
             {
               terGetData ?
                 <div>
@@ -96,13 +61,12 @@ function App() {
 
                   }}>
 
-                    <span>Name </span> <span>: {terGetData.Name} </span>
-                    <span>Location</span> <span>: {terGetData.Location}</span>
+                    <span>Name </span> <span>: {terGetData?.name} </span>
+                    <span>Location</span> <span>: {terGetData.location}</span>
                     <span>Date</span><span>: 12 jan 2023</span>
                     <span>Time</span> <span> :
-                      <small> {new Date(terGetData.Time).getUTCHours()}:</small>
-                      <small>{new Date(terGetData.Time).getUTCMinutes()}:</small>
-                      <small>{new Date(terGetData.Time).getUTCSeconds()}</small>
+                      <small> {terGetData.time}</small>
+                      
                     </span>
                   </div>
 
@@ -118,12 +82,14 @@ function App() {
                 </div>
             }
 
+
+
           </div>
 
 
           <div className='middle-div'>
 
-            <div > <h1 >Female</h1> </div>
+            <div > <h1 >{terGetData?.name}</h1> </div>
 
             <div className='img-container-div'>
               <img src="https://i.ibb.co/KqGhnTG/demo-image-1-1230x615.jpg" alt="" srcSet="" />
@@ -154,7 +120,7 @@ function App() {
 
                     }}>
                       <div>
-                        <p style={{ margin: '0px' }} >ID : {post?.ID}</p>
+                        <p style={{ margin: '0px' }} >ID : {post?.id}</p>
                         <p style={{ marginTop: '15px ' }} >Person detected</p>
                       </div>
                       <div>
@@ -163,9 +129,10 @@ function App() {
 
                           {/* {         - new Date(post.Time).getUTCHours() - new Date(post.Time).getUTCMinutes()     } */}
 
-                          <small>{new Date(post.Time).getUTCHours()}:</small>
-                          <small>{new Date(post.Time).getUTCMinutes()}:</small>
-                          <small>{new Date(post.Time).getUTCSeconds()}</small>
+                          <small style={{marginRight:'9px'}}>{post.date}</small>
+                          <small>{post.time}</small>
+                          {/* <small>{new Date(post.Time).getUTCMinutes()}:</small>
+                          <small>{new Date(post.Time).getUTCSeconds()}</small> */}
 
 
                         </p>
